@@ -1,16 +1,9 @@
 /*
 脚本功能：搭建数仓ODS原始数据层
 说明：
-1. 创建数据库NewDataWareHouse，新建ods架构，用于存放源系统原始数据
-2. 采用OBJECT_ID判断，仅当表不存在时建表，脚本可重复执行
-3. 共6张表，对接CRM、ERP业务源，保留原始字段，不做数据清洗
-表清单：
-ods.crm_cust_info      CRM客户基础信息
-ods.crm_prd_info       CRM产品信息
-ods.crm_sales_details  CRM销售订单明细
-ods.erp_cust_az12      ERP客户信息
-ods.erp_loc_a101       ERP客户地区信息
-ods.erp_px_cat_g1v2    ERP产品品类维护信息
+1.本脚本用于创建数据仓库数据库、stg 暂存模式与 ods 原始数据模式，并完成 STG 暂存表和 ODS 原始数据表的建表工作。
+2.STG 层表结构与 CSV 源文件保持一致，仅存放原始业务数据；
+3.ODS 层在业务字段基础上增加加载时间、源文件路径、批次号三个审计字段，用于记录 ETL 加载信息，为后续 DWD 层数据清洗提供基础数据源。
 */
 USE master;
 GO
