@@ -29,7 +29,10 @@ CREATE TABLE ods.crm_cust_info(
     cst_lastname NVARCHAR(50),
     cst_marital_status NVARCHAR(50),
     cst_gndr NVARCHAR(50),
-    cst_create_date DATE
+    cst_create_date DATE,
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 IF OBJECT_ID('ods.crm_prd_info','U') IS NULL
@@ -41,7 +44,10 @@ CREATE TABLE ods.crm_prd_info(
     prd_cost INT,
     prd_line NVARCHAR(50),
     prd_start_dt DATE,
-    prd_end_dt DATE
+    prd_end_dt DATE,
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 IF OBJECT_ID('ods.crm_sales_details','U') IS NULL
@@ -55,7 +61,10 @@ CREATE TABLE ods.crm_sales_details(
     sls_due_dt NVARCHAR(10),
     sls_sales INT,
     sls_quantity INT,
-    sls_price INT
+    sls_price INT,
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 IF OBJECT_ID('ods.erp_cust_az12','U') IS NULL
@@ -63,14 +72,20 @@ BEGIN
 CREATE TABLE ods.erp_cust_az12(
     cid NVARCHAR(50),
     bdate DATE,
-    gen NVARCHAR(10)
+    gen NVARCHAR(10),
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 IF OBJECT_ID('ods.erp_loc_a101','U') IS NULL
 BEGIN
 CREATE TABLE ods.erp_loc_a101(
     cid NVARCHAR(50),
-    cntry NVARCHAR(50)
+    cntry NVARCHAR(50),
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 IF OBJECT_ID('ods.erp_px_cat_g1v2','U') IS NULL
@@ -79,7 +94,10 @@ CREATE TABLE ods.erp_px_cat_g1v2(
     id NVARCHAR(50),
     cat NVARCHAR(50),
     subcat NVARCHAR(50),
-    maintenance NVARCHAR(10)
+    maintenance NVARCHAR(10),
+    load_datetime DATETIME NULL,
+	source_file NVARCHAR(500) NULL,
+	load_batch_id BIGINT NULL
 );
 END
 GO
