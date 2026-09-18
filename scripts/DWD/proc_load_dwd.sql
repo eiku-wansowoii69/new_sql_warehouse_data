@@ -5,14 +5,13 @@
 3.使用 CTE 完成数据清洗、多表关联整合，分别构建客户维度、产品维度、销售明细事实表，自动生成代理键，标准化字段并修正业务异常数据。
 4.调用前需先执行 ODS 层 ETL。
 */
+USE NewDataWareHouse;
+GO
 
 --EXEC ods.load_ods @batch_id = 2026091801;
 --GO
 --EXEC dwd.load_dwd @batch_id = 2026091801;
 --GO
-
-USE NewDataWareHouse;
-GO
 
 CREATE OR ALTER PROCEDURE dwd.load_dwd(
     @batch_id BIGINT
@@ -144,6 +143,11 @@ BEGIN
                 DATEADD(DAY,-1,CAST(LEAD(prd_start_dt)OVER(PARTITION BY prd_key ORDER BY CAST(prd_start_dt AS DATE))AS DATE)) AS prd_end_dt
                 FROM ods.crm_prd_info
             ),
+            prd_latest AS (
+                SELECT *
+                FROM clean_prd_info
+                WHERE prd_end_dt IS NULL
+            ),--结束时间为空的函数才是最新版的产品
             clean_px_cat AS(
                 SELECT id,
                 cat,
@@ -162,7 +166,6 @@ BEGIN
                 cost,
                 line,
                 start_date,
-                end_date,
                 maintenance,
                 load_batch_id
             )
@@ -176,7 +179,6 @@ BEGIN
             pn.prd_cost AS cost,
             pn.prd_line AS line,
             pn.prd_start_dt AS start_date,
-            pn.prd_end_dt AS end_date,
             pc.maintenance,
             @batch_id AS load_batch_id
             FROM clean_prd_info pn
@@ -258,8 +260,3 @@ BEGIN
     END CATCH
 END
 GO
-
-
-
-
-
