@@ -45,7 +45,6 @@ CREATE TABLE dwd.dim_products(
     cost INT,
     line NVARCHAR(50),
     start_date DATE,
-    end_date DATE,
     maintenance NVARCHAR(10),
     load_batch_id BIGINT NULL
 );
