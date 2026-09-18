@@ -1,5 +1,6 @@
-
---销售事实表的测试
+/*
+脚本说明：在DWD进行数据清洗时需测试数据清洗的必要性和类型，此脚本是进行销售事实表清洗时的测试文本。
+*/
 select sls_ord_num
 from ods.crm_sales_details
 where sls_ord_num is null or sls_ord_num=''
