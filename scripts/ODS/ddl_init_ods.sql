@@ -4,6 +4,9 @@
 1.本脚本用于创建数据仓库数据库、stg 暂存模式与 ods 原始数据模式，并完成 STG 暂存表和 ODS 原始数据表的建表工作。
 2.STG 层表结构与 CSV 源文件保持一致，仅存放原始业务数据；
 3.ODS 层在业务字段基础上增加加载时间、源文件路径、批次号三个审计字段，用于记录 ETL 加载信息，为后续 DWD 层数据清洗提供基础数据源。
+4.在 SSMS 中使用 stg + ods 两层，是因为 SQL Server 的 BULK INSERT 不支持指定列映射，只能按表的物理列顺序全列导入，而 ods 表带审计字段（load_datetime、source_file、load_batch_id）
+会导致列数不匹配报错，所以只能用 stg（纯业务列，与 CSV 对齐，直接 bulk 进）和ods（业务列 + 审计字段，用 INSERT...SELECT 补上）这种两层结构绕开限制。
+5.在这里坚持使用BULK INSERT的工具是因为第一次做完整的项目想用较为基础的原生语法，并非数仓设计必须这样分层。
 */
 USE master;
 GO
