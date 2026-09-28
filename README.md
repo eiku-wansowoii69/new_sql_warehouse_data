@@ -146,6 +146,6 @@ Dashboard 主要围绕以下业务方向展开：
 
 本项目使用 [DataWithBaraa/sql-data-warehouse-project](https://github.com/DataWithBaraa/sql-data-warehouse-project) 项目提供的 **ERP 和 CRM 源数据**作为原始数据来源。
 
-该数据集原本用于构建基于 SQL Server 的数据仓库项目，包含来自两个业务系统的 CSV 数据。本项目在此数据基础上，使用 **PostgreSQL + SQL + Python + Tableau** 重新设计数据处理流程，并按照 **ODS → DWD → ADS** 的分层方式进行数据仓库建设与 BI 分析。
+该数据集原本用于构建基于 SQL Server 的数据仓库项目，包含来自两个业务系统的 CSV 数据。本项目在此数据基础上，使用 **SQL Server + SQL + Tableau** 重新设计数据处理流程，并按照 **ODS → DWD → ADS** 的分层方式进行数据仓库建设与 BI 分析。
 
 ---
