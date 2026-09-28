@@ -144,24 +144,8 @@ Dashboard 主要围绕以下业务方向展开：
 
 # 📚 数据来源
 
-本项目使用 CRM 和 ERP 两个业务系统提供的 CSV 数据作为原始数据源。
+本项目使用 [DataWithBaraa/sql-data-warehouse-project](https://github.com/DataWithBaraa/sql-data-warehouse-project) 项目提供的 **ERP 和 CRM 源数据**作为原始数据来源。
 
-### CRM Source
-
-| Dataset             | Description          |
-| ------------------- | -------------------- |
-| `cust_info.csv`     | Customer Information |
-| `prd_info.csv`      | Product Information  |
-| `sales_details.csv` | Sales Details        |
-
-### ERP Source
-
-| Dataset           | Description                  |
-| ----------------- | ---------------------------- |
-| `CUST_AZ12.csv`   | Customer Information         |
-| `LOC_A101.csv`    | Location Information         |
-| `PX_CAT_G1V2.csv` | Product Category Information |
-
-原始数据经过 ODS 层接入后，在 DWD 层完成数据清洗、标准化及多源数据整合，最终形成 ADS 层分析数据。
+该数据集原本用于构建基于 SQL Server 的数据仓库项目，包含来自两个业务系统的 CSV 数据。本项目在此数据基础上，使用 **PostgreSQL + SQL + Python + Tableau** 重新设计数据处理流程，并按照 **ODS → DWD → ADS** 的分层方式进行数据仓库建设与 BI 分析。
 
 ---
