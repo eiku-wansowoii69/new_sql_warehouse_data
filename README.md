@@ -165,7 +165,3 @@ Dashboard 主要围绕以下业务方向展开：
 原始数据经过 ODS 层接入后，在 DWD 层完成数据清洗、标准化及多源数据整合，最终形成 ADS 层分析数据。
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License.
