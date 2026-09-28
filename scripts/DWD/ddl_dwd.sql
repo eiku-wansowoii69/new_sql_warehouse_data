@@ -1,9 +1,18 @@
+/*
+脚本名称：DWD 层建表脚本
+功能：创建数据仓库明细层（dwd schema），采用星型模型构建电商数据集的事实表和维度表，
+      用于存储经过清洗、类型转换和标准化后的明细数据。
+说明：脚本使用 IF OBJECT_ID 判等判断，表已存在时跳过，可重复运行；
+      共 3 张表，分为 1 张事实表（fact_sales）和 2 张维度表（dim_customers、dim_products）；
+      每张表末尾均附加 load_batch_id 字段，记录数据来自哪一批 raw 数据，实现全仓库数据可追溯；
+      事实表存储订单明细，维度表存储客户、商品信息，便于后续多维度关联分析。
+*/
 USE NewDataWareHouse;
 GO
 --CREATE SCHEMA dwd;
 --GO
 
---DWD �ͻ�ά�ȱ� dim_customers��crm�ͻ� + ERP���� + ERP����
+--DWD 客户维度表 dim_customers：crm客户 + ERP生日 + ERP国家
 IF OBJECT_ID('dwd.dim_customers','U') IS NULL
 BEGIN
 CREATE TABLE dwd.dim_customers(
@@ -22,7 +31,7 @@ CREATE TABLE dwd.dim_customers(
 END
 GO
 
---DWD ��Ʒά�ȱ� dim_products��crm��Ʒ + ERP��Ʒ������Ϣ
+--DWD 产品维度表 dim_products：crm产品 + ERP产品分类信息
 IF OBJECT_ID('dwd.dim_products','U') IS NULL
 BEGIN
 CREATE TABLE dwd.dim_products(
@@ -42,7 +51,7 @@ CREATE TABLE dwd.dim_products(
 END
 GO
 
---DWD ������ʵ�� fact_sales��ÿһ�ʶ�����ϸ
+--DWD 销售事实表 fact_sales：每一笔订单明细
 IF OBJECT_ID('dwd.fact_sales','U') IS NULL
 BEGIN
 CREATE TABLE dwd.fact_sales(
