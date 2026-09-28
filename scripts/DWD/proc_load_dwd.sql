@@ -1,3 +1,12 @@
+/*
+è„šæœ¬åç§°ï¼šDWD å±‚æ•°æ®åŠ è½½å­˜å‚¨è¿‡ç¨‹è„šæœ¬
+åŠŸèƒ½ï¼šåˆ›å»ºæ•°æ®ä»“åº“æ˜ç»†å±‚ï¼ˆdwd schemaï¼‰çš„ ETL å­˜å‚¨è¿‡ç¨‹ï¼ˆload_dwdï¼‰ï¼Œ
+      è´Ÿè´£ä» ODS å±‚æŠ½å–åŸå§‹æ•°æ®ï¼Œç»è¿‡æ¸…æ´—ã€å»é‡ã€ç±»å‹è½¬æ¢ã€æ ‡å‡†åŒ–ååŠ è½½è‡³ DWD å±‚çš„ç»´åº¦è¡¨å’Œäº‹å®è¡¨ã€‚
+è¯´æ˜ï¼šè„šæœ¬ä½¿ç”¨ CREATE OR ALTER ç¡®ä¿å¯é‡å¤è¿è¡Œï¼›é€šè¿‡ä¼ å…¥ @batch_id å®ç°å…¨ä»“åº“æ•°æ®æ‰¹æ¬¡è¿½æº¯ï¼›
+      é‡‡ç”¨ TRY...CATCH å’Œäº‹åŠ¡ï¼ˆTRANSACTIONï¼‰æœºåˆ¶ï¼Œä¿è¯æ•°æ®åŠ è½½çš„åŸå­æ€§å’Œé”™è¯¯å›æ»šï¼›
+      å…±åŠ è½½ 3 å¼ è¡¨ï¼ŒåŒ…å« 2 å¼ ç»´åº¦è¡¨ï¼ˆdim_customersã€dim_productsï¼‰å’Œ 1 å¼ äº‹å®è¡¨ï¼ˆfact_salesï¼‰ï¼›
+      æ¯å¼ è¡¨æœ«å°¾å‡é™„åŠ  load_batch_id å­—æ®µï¼Œç”¨äºè®°å½•æ•°æ®æ¥æºæ‰¹æ¬¡ã€‚
+*/
 USE NewDataWareHouse;
 GO
 
@@ -17,7 +26,7 @@ BEGIN
     DECLARE
         @start_time DATETIME,
         @end_time DATETIME,
-        @current_table NVARCHAR(200); -- ±ê¼Çµ±Ç°¼ÓÔØÄÄÕÅ±í£¬ÓÃÓÚ±¨´íÈÕÖ¾
+        @current_table NVARCHAR(200); -- æ ‡è®°å½“å‰åŠ è½½å“ªå¼ è¡¨ï¼Œç”¨äºæŠ¥é”™æ—¥å¿—
     BEGIN TRY
         PRINT '=============================================';
         PRINT 'DWD Layer ETL Start, BatchID: ' + CAST(@batch_id AS NVARCHAR);
@@ -25,28 +34,28 @@ BEGIN
         PRINT 'Loading ODS cleaned data to DWD dimension & fact tables';
         PRINT '---------------------------------------------';
 
-        --1.¼ÓÔØdim_customers¿Í»§Î¬¶È±í
+        --1.åŠ è½½dim_customerså®¢æˆ·ç»´åº¦è¡¨
         SET @current_table = 'dwd.dim_customers';
         PRINT '>> Start loading table: ' + @current_table;
         SET @start_time = GETDATE();
 
-        BEGIN TRANSACTION;-- ÏÈÇå¿ÕÄ¿±êDWD±í
+        BEGIN TRANSACTION;-- å…ˆæ¸…ç©ºç›®æ ‡DWDè¡¨
             TRUNCATE TABLE dwd.dim_customers;
 
             WITH clean_cust_info AS(
-	            SELECT cst_id,--ÇåÏ´id(²»Îª¿ÕÇÒ´óÓÚ0£©
-	            cst_key,--ÇåÏ´×Ö¶Î£¨Ã»ÓĞ¿Õ¸ñ£©
+	            SELECT cst_id,--æ¸…æ´—id(ä¸ä¸ºç©ºä¸”å¤§äº0ï¼‰
+	            cst_key,--æ¸…æ´—å­—æ®µï¼ˆæ²¡æœ‰ç©ºæ ¼ï¼‰
 	            TRIM(cst_firstname) AS cst_firstname,
                 TRIM(cst_lastname) AS cst_lastname,
                 CASE WHEN cst_marital_status='S' THEN 'Single'
                      WHEN cst_marital_status='M' THEN 'Married'
                      ELSE 'n/a'
-                END AS cst_marital_status,--²é¿´·ÖÀà
+                END AS cst_marital_status,--æŸ¥çœ‹åˆ†ç±»
                 CASE WHEN cst_gndr='F' THEN 'Female'
                      WHEN cst_gndr='M' THEN 'Male'
                      ELSE 'n/a'
                 END AS cst_gndr,
-                TRY_CONVERT(DATE,cst_create_date,111) AS cst_create_date --×ª¸ñÊ½
+                TRY_CONVERT(DATE,cst_create_date,111) AS cst_create_date --è½¬æ ¼å¼
                 FROM(
                     SELECT *,
                     ROW_NUMBER()OVER(PARTITION BY cst_id ORDER BY TRY_CONVERT(DATE,cst_create_date,111) DESC)AS rk
@@ -113,7 +122,7 @@ BEGIN
         PRINT '>> -------------------------------------------';
 
 
-        --2.¼ÓÔØdim_products²úÆ·Î¬¶È±í
+        --2.åŠ è½½dim_productsäº§å“ç»´åº¦è¡¨
         SET @current_table = 'dwd.dim_products';
         PRINT '>> Start loading table: ' + @current_table;
         SET @start_time = GETDATE();
@@ -126,7 +135,7 @@ BEGIN
                 REPLACE(SUBSTRING(prd_key,1,5),'-','_') AS cat_id,
                 SUBSTRING(prd_key,7,LEN(prd_key)) AS prd_key,
                 prd_nm,
-                ISNULL(prd_cost,0) AS prd_cost,--³É±¾²»ÄÜÎª¿ÕÖµ£¨Èç¹û²»Îª¿ÕÖµ·µ»Ø±í´ïÊ½±¾Éí£¬Îª¿ÕÖµ¾Í»»³É0£©
+                ISNULL(prd_cost,0) AS prd_cost,--æˆæœ¬ä¸èƒ½ä¸ºç©ºå€¼ï¼ˆå¦‚æœä¸ä¸ºç©ºå€¼è¿”å›è¡¨è¾¾å¼æœ¬èº«ï¼Œä¸ºç©ºå€¼å°±æ¢æˆ0ï¼‰
                 CASE prd_line
 	                WHEN 'M' THEN 'Mountain'
 	                WHEN 'R' THEN 'Road'
@@ -142,7 +151,7 @@ BEGIN
                 SELECT *
                 FROM clean_prd_info
                 WHERE prd_end_dt IS NULL
-            ),--½áÊøÊ±¼äÎª¿ÕµÄº¯Êı²ÅÊÇ×îĞÂ°æµÄ²úÆ·
+            ),--ç»“æŸæ—¶é—´ä¸ºç©ºçš„å‡½æ•°æ‰æ˜¯æœ€æ–°ç‰ˆçš„äº§å“
             clean_px_cat AS(
                 SELECT id,
                 cat,
@@ -185,7 +194,7 @@ BEGIN
         PRINT '>> -------------------------------------------';
 
 
-        --3.¼ÓÔØfact_salesÏúÊÛÊÂÊµ±í
+        --3.åŠ è½½fact_salesé”€å”®äº‹å®è¡¨
         SET @current_table = 'dwd.fact_sales';
         PRINT '>> Start loading table: ' + @current_table;
         SET @start_time = GETDATE();
@@ -212,8 +221,8 @@ BEGIN
             dp.product_key AS product_key,
             sls.sls_cust_id AS customer_id,
             sls.sls_prd_key AS product_number,
-            CASE WHEN sls.sls_order_dt= '0' OR LEN(TRIM(sls.sls_order_dt))!= 8 THEN NULL --Èç¹ûÔ´±íÀï´æµÄÊÇvarcharÀàĞÍ¾ÍÕâÑù×ª
-                 ELSE TRY_CONVERT(DATE,TRIM(sls.sls_order_dt),112) --112µÄÀàĞÍ¾ÍÊÇÕâÖÖ8Î»Êı×ÖµÄÈÕÆÚ
+            CASE WHEN sls.sls_order_dt= '0' OR LEN(TRIM(sls.sls_order_dt))!= 8 THEN NULL --å¦‚æœæºè¡¨é‡Œå­˜çš„æ˜¯varcharç±»å‹å°±è¿™æ ·è½¬
+                 ELSE TRY_CONVERT(DATE,TRIM(sls.sls_order_dt),112) --112çš„ç±»å‹å°±æ˜¯è¿™ç§8ä½æ•°å­—çš„æ—¥æœŸ
             END AS order_date,
             CASE WHEN sls.sls_ship_dt= '0' OR LEN(TRIM(sls.sls_ship_dt))!= 8 THEN NULL 
                  ELSE TRY_CONVERT(DATE,TRIM(sls.sls_ship_dt),112)
@@ -227,7 +236,7 @@ BEGIN
             END AS sales,
             sls.sls_quantity AS quantity,
             CASE WHEN sls.sls_price IS NULL OR sls.sls_price<=0 
-                   THEN sls.sls_sales/NULLIF(sls.sls_quantity,0)--Èç¹û±í´ïÊ½1=±í´ïÊ½2¡ú·µ»ØNULL ·ñÔò·µ»Ø±í´ïÊ½1
+                   THEN sls.sls_sales/NULLIF(sls.sls_quantity,0)--å¦‚æœè¡¨è¾¾å¼1=è¡¨è¾¾å¼2â†’è¿”å›NULL å¦åˆ™è¿”å›è¡¨è¾¾å¼1
                  ELSE sls.sls_price
             END AS price,
             @batch_id AS load_batch_id
@@ -242,7 +251,7 @@ BEGIN
         PRINT '>> -------------------------------------------';
 
 
-        -- DWDÕûÌåÍê³ÉÈÕÖ¾
+        -- DWDæ•´ä½“å®Œæˆæ—¥å¿—
         PRINT '=============================================';
         PRINT 'DWD Layer ETL Completed Successfully, BatchID: ' + CAST(@batch_id AS NVARCHAR);
         PRINT '=============================================';
